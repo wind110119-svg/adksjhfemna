@@ -513,7 +513,7 @@ function vGame(p) {
   const g = view, w = BYID[g.ids[g.i]], level = levelOf(p);
   const title = g.code === 'REVIEW' ? 'Review' : UNIT[g.code].en;
   const dots = g.ids.map((_, k) => `<i class="${k < g.i ? 'done' : k === g.i ? (g.state === 'right' ? 'done' : 'now') : ''}"></i>`).join('');
-  const locked = level === 4 && g.state !== 'right';
+  const readFirst = level === 4 && g.state !== 'right';
   const long = w.word.length > 9;
   const n = g.opts.length;
   const opts = g.opts.map(id => {
@@ -542,9 +542,9 @@ function vGame(p) {
     <div class="stage">
       <div class="left">
         <div class="word-col">
-          <button class="word-btn ${long ? 'long' : ''} ${locked ? 'locked' : ''}" data-act="sayWord" aria-label="Play the word ${esc(w.word)}">${esc(w.word)}${ICON.speaker}</button>
+          <button class="word-btn ${long ? 'long' : ''}" data-act="sayWord" aria-label="Play the word ${esc(w.word)}">${esc(w.word)}${ICON.speaker}</button>
           <div class="kk">${esc(w.kk)}</div>
-          ${locked ? '<div class="hint">Read first — the word plays after you choose.</div>' : ''}
+          ${readFirst ? '<div class="hint">Try to read it first. Tap the word to hear it.</div>' : ''}
         </div>
         <div class="buddy"><div class="svgbox me ${g.mood === 'cheer' ? 'bounce' : ''}">${friendSVG(p.companion, g.mood)}</div>${bubble}</div>
         <button class="big-btn next" data-act="next" ${g.state === 'right' ? '' : 'disabled'}>Next ${ICON.next}</button>
@@ -704,7 +704,7 @@ document.addEventListener('click', e => {
     case 'friends': go({ name: 'friends' }); break;
     case 'setCompanion': p.companion = el.dataset.id; save(); render(); break;
     case 'startUnit': startRound(el.dataset.code); break;
-    case 'sayWord': { const w = BYID[view.ids[view.i]]; if (levelOf(p) === 4 && view.state !== 'right') { el.animate && el.animate([{ transform: 'translateX(0)' }, { transform: 'translateX(-6px)' }, { transform: 'translateX(6px)' }, { transform: 'translateX(0)' }], { duration: 250 }); return; } speak(w.word); break; }
+    case 'sayWord': { const w = BYID[view.ids[view.i]]; speak(w.word); break; }
     case 'answer': answer(el.dataset.id); break;
     case 'next': nextQuestion(); break;
     case 'openGate': go({ name: 'gate', back: view.name === 'home' ? 'home' : 'start' }); break;
