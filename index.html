@@ -379,14 +379,36 @@ function voice() {
   for (const name of PREFERRED) { const v = voices.find(v => v.name.indexOf(name) === 0); if (v) return v; }
   return voices.find(v => v.localService) || voices[0] || null;
 }
+/* Mobile Safari / Chrome drop an utterance that is queued right after cancel() of a
+   running one, and iOS ignores speech until it has spoken once inside a tap.
+   So: unlock on the first touch, keep a reference to the live utterance, and leave a
+   short gap after cancel() before speaking again. */
+let liveUtt = null, unlocked = false, speakTimer = 0;
+function unlockSpeech() {
+  if (unlocked || !TTS) return;
+  unlocked = true;
+  try { const u = new SpeechSynthesisUtterance(' '); u.volume = 0; u.lang = 'en-US'; speechSynthesis.speak(u); } catch (e) { /* ignore */ }
+}
+['pointerdown', 'touchend', 'keydown'].forEach(ev => document.addEventListener(ev, unlockSpeech, { once: true, passive: true }));
+function makeUtt(text, rate) {
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'en-US'; const v = voice(); if (v) u.voice = v;
+  u.rate = rate || store.settings.rate || 0.85; u.pitch = 1.05;
+  return u;
+}
 function speak(text, { queue = false, rate } = {}) {
   if (!TTS) return;
   try {
-    if (!queue) speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(text);
-    u.lang = 'en-US'; const v = voice(); if (v) u.voice = v;
-    u.rate = rate || store.settings.rate || 0.85; u.pitch = 1.05;
-    speechSynthesis.speak(u);
+    const u = makeUtt(text, rate);
+    const go = () => { try { if (speechSynthesis.paused) speechSynthesis.resume(); liveUtt = u; speechSynthesis.speak(u); } catch (e) { /* ignore */ } };
+    if (queue) { if (speakTimer) setTimeout(go, 160); else go(); return; }
+    clearTimeout(speakTimer); speakTimer = 0;
+    if (speechSynthesis.speaking || speechSynthesis.pending) {
+      speechSynthesis.cancel();
+      speakTimer = setTimeout(() => { speakTimer = 0; go(); }, 120);
+    } else {
+      go();
+    }
   } catch (e) { /* ignore */ }
 }
 
