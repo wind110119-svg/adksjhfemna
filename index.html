@@ -96,17 +96,28 @@ h1,h2{font-family:var(--display);font-weight:700;margin:0;line-height:1.15}
 .opt .pic{width:70%;max-width:150px;aspect-ratio:1}
 .opts.n2 .opt .pic{width:62%}
 .opts.n4 .opt .pic{width:46%}
+.opt .pic{position:relative}
+.opt .txt{position:relative;display:inline-block;padding:4px 10px}
 .opt .lbl{display:flex;flex-direction:column;align-items:center;gap:0;text-align:center}
 .opt .lbl b{font-family:var(--display);font-size:20px;line-height:1.1}
 .opt .lbl span{font-family:var(--kk);font-size:14px;color:var(--muted)}
 .opt.text{font-family:var(--zh);font-size:26px;font-weight:700;min-height:100px}
-.opt.wrong{background:var(--sunken);border-color:var(--line)}
-.opt.wrong .pic{width:50%;opacity:.7}
-.opt.dim{opacity:.5}
-.opt.right{border-color:var(--correct);background:var(--correct-soft)}
-.opt .ring{position:absolute;inset:6%;pointer-events:none}
-.opt .ring circle,.opt .ring ellipse{fill:none;stroke:var(--correct);stroke-width:9;stroke-linecap:round;
-  stroke-dasharray:400;stroke-dashoffset:400;animation:draw .45s ease-out forwards}
+.opt.is-wrong{background:var(--sunken);border-color:var(--line)}
+.opt.is-wrong .pic,.opt.is-peek .pic{width:50%}
+.opt.is-wrong .pic>svg:first-child{opacity:.7}
+.opt.is-right{border-color:var(--correct);background:var(--correct-soft)}
+.opt.is-right.fresh.text,.opt.is-right.fresh .pic{animation:cardpop .4s ease-out}
+@keyframes cardpop{0%{transform:scale(.85)}60%{transform:scale(1.08)}100%{transform:scale(1)}}
+.opt.tap{animation:tapbump .3s ease-out}
+@keyframes tapbump{40%{transform:scale(.95)}100%{transform:scale(1)}}
+.opt .svgbox>svg.ring,.opt .ring{position:absolute;left:50%;top:50%;width:122%;height:122%;transform:translate(-50%,-50%);pointer-events:none;opacity:.72;overflow:visible}
+.opt .txt>svg.ring{width:150%;height:170%}
+.opt .ring circle{fill:none;stroke:var(--correct);stroke-width:8;stroke-linecap:round;transform:rotate(-90deg);transform-origin:60px 60px}
+.opt .ring.draw circle{stroke-dasharray:315;stroke-dashoffset:315;animation:draw .45s ease-out forwards}
+.burst{position:fixed;inset:0;pointer-events:none;z-index:8;overflow:hidden}
+.burst i{position:absolute;width:10px;height:10px;margin:-5px 0 0 -5px;border-radius:50%;background:var(--c);animation:fly .9s cubic-bezier(.2,.7,.3,1) forwards}
+.burst i.st{width:16px;height:16px;margin:-8px 0 0 -8px;border-radius:0;clip-path:polygon(50% 0,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%)}
+@keyframes fly{0%{transform:translate(0,0) scale(.4) rotate(0);opacity:1}70%{opacity:1}100%{transform:translate(var(--dx),var(--dy)) scale(1) rotate(var(--r));opacity:0}}
 @keyframes draw{to{stroke-dashoffset:0}}
 .buddy{display:flex;align-items:flex-end;gap:10px;min-height:84px;margin-top:auto}
 .buddy .me{width:84px;height:84px;flex:none}
@@ -117,8 +128,8 @@ h1,h2{font-family:var(--display);font-weight:700;margin:0;line-height:1.15}
 
 @media (orientation:landscape) and (min-width:760px){
   .stage{flex-direction:row;gap:28px}
-  .left{width:min(38%,400px);display:flex;flex-direction:column;gap:14px;flex:none}
-  .right{flex:1;display:flex;flex-direction:column;justify-content:center;min-width:0}
+  .col-l{width:min(38%,400px);display:flex;flex-direction:column;gap:14px;flex:none}
+  .col-r{flex:1;display:flex;flex-direction:column;justify-content:center;min-width:0}
   .opts.n3{grid-template-columns:repeat(3,minmax(0,1fr))}
   .opts.n2 .opt{min-height:300px}
   .opts.n3 .opt{min-height:240px}
@@ -127,8 +138,8 @@ h1,h2{font-family:var(--display);font-weight:700;margin:0;line-height:1.15}
   .word-btn.long{font-size:clamp(32px,4vw,60px)}
 }
 @media (orientation:portrait),(max-width:759px){
-  .left,.right{display:contents}
-  .word-col{order:1}.opts{order:2}.buddy{order:3}.next{order:4}
+  .col-l,.col-r{display:contents}
+  .word-col{order:1}.opts{order:2}.buddy{order:3}.next-btn{order:4}
 }
 
 /* round done */
@@ -147,13 +158,16 @@ h1,h2{font-family:var(--display);font-weight:700;margin:0;line-height:1.15}
 @keyframes pop{0%{transform:scale(.3) rotate(-30deg)}70%{transform:scale(1.12) rotate(-4deg)}100%{transform:scale(1) rotate(-8deg)}}
 
 /* friends */
-.friends{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
+.friends{display:grid;grid-template-columns:repeat(auto-fill,minmax(104px,1fr));gap:10px}
+.friend.far{padding:10px;justify-content:center}
+.friend.far .pic{width:56px;height:56px;opacity:.7}
+.friend.next{border-color:var(--line);border-style:dashed}
 .friend{background:var(--surface);border:3px solid var(--surface);border-radius:22px;padding:14px;display:flex;flex-direction:column;align-items:center;gap:6px}
 .friend.sel{border-color:var(--accent)}
 .friend.lock{background:var(--sunken);border-color:var(--sunken);cursor:default}
-.friend .pic{width:88px;height:88px}
-.friend .nm{font-family:var(--display);font-size:22px;font-weight:700}
-.friend .tag{font-size:13px;font-weight:800;padding:3px 12px;border-radius:999px}
+.friend .pic{width:72px;height:72px}
+.friend .nm{font-family:var(--display);font-size:19px;font-weight:700;text-align:center;line-height:1.1}
+.friend .tag{font-size:12px;font-weight:800;padding:3px 10px;border-radius:999px;text-align:center}
 .friend .tag.on{color:#fff;background:var(--accent)}
 .friend .tag.pick{color:var(--accent)}
 .friend .tag.need{color:var(--muted)}
@@ -187,7 +201,7 @@ h1,h2{font-family:var(--display);font-weight:700;margin:0;line-height:1.15}
 .btn-line button.danger{background:#F6E1DD;color:#A2402F}
 .toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-weight:700;z-index:9;font-family:var(--zh)}
 .empty{background:var(--surface);border-radius:20px;padding:24px;text-align:center;display:flex;flex-direction:column;gap:12px;align-items:center}
-@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.opt .ring circle,.opt .ring ellipse{stroke-dashoffset:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}.opt .ring circle{stroke-dashoffset:0}.burst{display:none}}
 </style>
 </head>
 <body>
@@ -217,34 +231,76 @@ const CHOICES = { 1: 2, 2: 3, 3: 3, 4: 4 };
 const REVIEW_CAP = { 1: 5, 2: 4, 3: 4, 4: 3 };          // "normal" review amount
 const REVIEW_SCALE = { less: 0.6, normal: 1, more: 1.5 };
 const MIN_UNIT = { 1: 4, 2: 6, 3: 6, 4: 6 };
-const STICKERS_PER_FRIEND = 5;
 const PRAISE = ['Great job!', 'Awesome!', 'You got it!', 'Well done!', 'Super!', 'Nice work!', 'Yes!'];
 
-/* ---------- companions ---------- */
-const FRIENDS = [
-  { id: 'mochi', name: 'Mochi', body: '#F0B48E', cheek: '#E08A76', top: 'ears' },
-  { id: 'nori', name: 'Nori', body: '#9CC3A8', cheek: '#6F9F80', top: 'sprout' },
-  { id: 'lumi', name: 'Lumi', body: '#B9A9D6', cheek: '#9A84C4', top: 'antenna' },
-  { id: 'bubu', name: 'Bubu', body: '#8EC3E6', cheek: '#5E9FCB', top: 'tufts' },
-  { id: 'kiki', name: 'Kiki', body: '#F2D27A', cheek: '#E0A84A', top: 'pointy' },
-  { id: 'toto', name: 'Toto', body: '#E8A3A8', cheek: '#D07A82', top: 'horn' },
+/* ---------- companions (60) ---------- */
+const PALETTE = [
+  ['#F0B48E', '#E08A76'], ['#9CC3A8', '#6F9F80'], ['#B9A9D6', '#9A84C4'], ['#8EC3E6', '#5E9FCB'],
+  ['#F2D27A', '#E0A84A'], ['#E8A3A8', '#D07A82'], ['#A8D8C8', '#74B7A2'], ['#D9C2A0', '#B89B72'],
+  ['#F2A08A', '#D9785F'], ['#D3B5E0', '#B08CC6'], ['#8FC1C0', '#5E9C9B'], ['#C2C8CF', '#9AA3AD'],
 ];
+const TOPS = ['ears', 'sprout', 'antenna', 'tufts', 'pointy', 'horn', 'bunny', 'leaf', 'bow', 'crown'];
+const SHAPES = ['round', 'tall', 'wide'];
+const EXTRAS = ['none', 'belly', 'spots', 'freckles'];
+const NAMES = ['Mochi', 'Nori', 'Lumi', 'Bubu', 'Kiki', 'Toto', 'Pip', 'Tofu', 'Momo', 'Puff', 'Zuzu', 'Coco',
+  'Dodo', 'Fifi', 'Gigi', 'Jojo', 'Lala', 'Mimi', 'Nana', 'Popo', 'Rara', 'Sisi', 'Tutu', 'Vivi',
+  'Wawa', 'Yuzu', 'Biscuit', 'Pebble', 'Maple', 'Sunny', 'Clover', 'Waffy', 'Muffin', 'Taro', 'Poppy', 'Bobo',
+  'Chichi', 'Dumpy', 'Fluff', 'Gumbo', 'Hoppy', 'Inky', 'Jiggy', 'Koko', 'Lolo', 'Minty', 'Nibbles', 'Ollie',
+  'Pudge', 'Quackers', 'Rolo', 'Sprinkle', 'Tiki', 'Uni', 'Wobble', 'Ziggy', 'Bonbon', 'Cuddles', 'Doodle', 'Sesame'];
+const FRIENDS = (() => {
+  const fixed = [[0, 'ears', 'round', 'none'], [1, 'sprout', 'round', 'none'], [2, 'antenna', 'round', 'none'],
+    [3, 'tufts', 'round', 'none'], [4, 'pointy', 'round', 'none'], [5, 'horn', 'round', 'none']];
+  const list = [], used = new Set();
+  const add = (pi, top, shape, extra) => { used.add([pi, top, shape].join()); const i = list.length; list.push({ id: i < 6 ? NAMES[i].toLowerCase() : 'f' + i, name: NAMES[i], body: PALETTE[pi][0], cheek: PALETTE[pi][1], top, shape, extra }); };
+  fixed.forEach(f => add(...f));
+  let i = 6, step = 0;
+  while (list.length < 60) {
+    const pi = (i * 5 + step) % PALETTE.length, top = TOPS[(i * 3 + step) % TOPS.length], shape = SHAPES[(i + step) % SHAPES.length];
+    if (!used.has([pi, top, shape].join())) { add(pi, top, shape, EXTRAS[(i * 7) % EXTRAS.length]); i++; } else step++;
+  }
+  return list;
+})();
 const FRIEND = Object.fromEntries(FRIENDS.map(f => [f.id, f]));
+/* stickers needed to unlock friend k (cumulative): 2 free, then 3 each up to #12, 4 each up to #30, 5 each after */
+const UNLOCK_AT = (() => { const a = []; let t = 0; for (let k = 0; k < FRIENDS.length; k++) { if (k >= 2) t += k < 12 ? 3 : k < 30 ? 4 : 5; a.push(t); } return a; })();
 
+const SHAPE_PATH = {
+  round: 'M50 16c22 0 38 16 38 40 0 22-17 33-38 33S12 78 12 56c0-24 16-40 38-40z',
+  tall: 'M50 12c18 0 30 16 30 42 0 24-13 36-30 36S20 78 20 54c0-26 12-42 30-42z',
+  wide: 'M50 26c26 0 42 11 42 31 0 20-18 32-42 32S8 77 8 57c0-20 16-31 42-31z',
+};
+const SHAPE_TOP = { round: 16, tall: 12, wide: 26 };
+function topArt(t, c, k) {
+  switch (t) {
+    case 'ears': return [`<circle cx="30" cy="22" r="8" fill="${c}"/><circle cx="70" cy="22" r="8" fill="${c}"/>`, ''];
+    case 'sprout': return ['', `<path d="M50 18c-2-8 2-14 9-14" stroke="${k}" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="60" cy="5" r="5" fill="${k}"/>`];
+    case 'antenna': return [`<path d="M40 20L34 6M60 20l6-14" stroke="${k}" stroke-width="4" stroke-linecap="round"/><circle cx="33" cy="5" r="5" fill="${k}"/><circle cx="67" cy="5" r="5" fill="${k}"/>`, ''];
+    case 'tufts': return ['', `<path d="M42 20q-4-12 2-16M50 18q0-12 4-16M58 20q4-12 10-14" stroke="${k}" stroke-width="4" fill="none" stroke-linecap="round"/>`];
+    case 'pointy': return [`<path d="M22 32l4-26 18 14zM78 32l-4-26-18 14z" fill="${c}"/>`, ''];
+    case 'horn': return ['', `<circle cx="50" cy="12" r="9" fill="${k}"/>`];
+    case 'bunny': return [`<ellipse cx="38" cy="10" rx="7" ry="15" fill="${c}"/><ellipse cx="62" cy="10" rx="7" ry="15" fill="${c}"/><ellipse cx="38" cy="10" rx="3" ry="10" fill="${k}" opacity=".6"/><ellipse cx="62" cy="10" rx="3" ry="10" fill="${k}" opacity=".6"/>`, ''];
+    case 'leaf': return ['', `<path d="M50 18q-14-4-16-16q14 2 16 16zM50 18q12-6 20-14q-2 14-20 14z" fill="${k}"/>`];
+    case 'bow': return ['', `<path d="M66 20l-12-9v18zM66 20l12-9v18z" fill="${k}"/><circle cx="66" cy="20" r="4.5" fill="${k}"/>`];
+    case 'crown': return ['', `<path d="M36 22l3-14 7 8 4-11 4 11 7-8 3 14z" fill="#E3B23C"/>`];
+  }
+  return ['', ''];
+}
 function friendSVG(id, mood) {
   const f = FRIEND[id] || FRIENDS[0];
   const c = f.body, k = f.cheek, ink = '#34423F';
-  let top = '';
-  if (f.top === 'ears') top = `<circle cx="30" cy="22" r="8" fill="${c}"/><circle cx="70" cy="22" r="8" fill="${c}"/>`;
-  if (f.top === 'sprout') top = `<path d="M50 18c-2-8 2-14 9-14" stroke="${k}" stroke-width="5" fill="none" stroke-linecap="round"/><circle cx="60" cy="5" r="5" fill="${k}"/>`;
-  if (f.top === 'antenna') top = `<path d="M40 20L34 6M60 20l6-14" stroke="${k}" stroke-width="4" stroke-linecap="round"/><circle cx="33" cy="5" r="5" fill="${k}"/><circle cx="67" cy="5" r="5" fill="${k}"/>`;
-  if (f.top === 'tufts') top = `<path d="M42 20q-4-12 2-16M50 18q0-12 4-16M58 20q4-12 10-14" stroke="${k}" stroke-width="4" fill="none" stroke-linecap="round"/>`;
-  if (f.top === 'pointy') top = `<path d="M22 32l4-26 18 14zM78 32l-4-26-18 14z" fill="${c}"/>`;
-  if (f.top === 'horn') top = `<circle cx="50" cy="12" r="9" fill="${k}"/>`;
-  const body = `<path d="M50 16c22 0 38 16 38 40 0 22-17 33-38 33S12 78 12 56c0-24 16-40 38-40z" fill="${c}"/>`;
+  const dy = SHAPE_TOP[f.shape || 'round'] - 16;
+  const [back, front] = topArt(f.top, c, k);
+  const tg = s => s ? `<g transform="translate(0 ${dy})">${s}</g>` : '';
+  const body = `<path d="${SHAPE_PATH[f.shape || 'round']}" fill="${c}"/>`;
+  let extra = '';
+  if (f.extra === 'belly') extra = `<ellipse cx="50" cy="77" rx="17" ry="10" fill="#FFFFFF" opacity=".35"/>`;
+  if (f.extra === 'spots') extra = `<circle cx="24" cy="44" r="4" fill="${k}" opacity=".45"/><circle cx="78" cy="72" r="5" fill="${k}" opacity=".45"/><circle cx="70" cy="36" r="3" fill="${k}" opacity=".45"/>`;
+  if (f.extra === 'freckles') extra = `<circle cx="27" cy="60" r="1.3" fill="${ink}" opacity=".4"/><circle cx="31" cy="63" r="1.3" fill="${ink}" opacity=".4"/><circle cx="69" cy="60" r="1.3" fill="${ink}" opacity=".4"/><circle cx="73" cy="63" r="1.3" fill="${ink}" opacity=".4"/>`;
   const cheeks = `<ellipse cx="29" cy="62" rx="6" ry="3.5" fill="${k}" opacity=".55"/><ellipse cx="71" cy="62" rx="6" ry="3.5" fill="${k}" opacity=".55"/>`;
   let eyes, mouth, arms = '', tilt = '';
-  if (mood === 'cheer') {
+  if (mood === 'locked') {
+    return `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="${SHAPE_PATH[f.shape || 'round']}" fill="#CDD5C9"/><rect x="38" y="48" width="24" height="20" rx="4" fill="#F7F8F3"/><path d="M43 48v-6a7 7 0 0 1 14 0v6" stroke="#F7F8F3" stroke-width="4" fill="none"/></svg>`;
+  } else if (mood === 'cheer') {
     eyes = `<path d="M33 52q5-6 10 0M57 52q5-6 10 0" stroke="${ink}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`;
     mouth = `<path d="M41 61q9 14 18 0z" fill="${ink}"/>`;
     arms = `<path d="M18 56L6 36M82 56l12-20" stroke="${c}" stroke-width="8" stroke-linecap="round"/>`;
@@ -252,13 +308,11 @@ function friendSVG(id, mood) {
     eyes = `<circle cx="38" cy="52" r="4.5" fill="${ink}"/><circle cx="62" cy="52" r="4.5" fill="${ink}"/>`;
     mouth = `<circle cx="50" cy="66" r="4" fill="${ink}"/>`;
     tilt = ' transform="rotate(-10 50 55)"';
-  } else if (mood === 'locked') {
-    return `<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M50 16c22 0 38 16 38 40 0 22-17 33-38 33S12 78 12 56c0-24 16-40 38-40z" fill="#CDD5C9"/><rect x="38" y="48" width="24" height="20" rx="4" fill="#F7F8F3"/><path d="M43 48v-6a7 7 0 0 1 14 0v6" stroke="#F7F8F3" stroke-width="4" fill="none"/></svg>`;
   } else {
     eyes = `<circle cx="38" cy="52" r="4.5" fill="${ink}"/><circle cx="62" cy="52" r="4.5" fill="${ink}"/>`;
     mouth = `<path d="M43 63q7 6 14 0" stroke="${ink}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
   }
-  return `<svg viewBox="0 0 100 100" aria-hidden="true"><g${tilt}>${arms}${top}${body}${cheeks}${eyes}${mouth}</g></svg>`;
+  return `<svg viewBox="0 0 100 100" aria-hidden="true"><g${tilt}>${arms}${tg(back)}${body}${extra}${tg(front)}${cheeks}${eyes}${mouth}</g></svg>`;
 }
 const STAR = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3l2.6 5.6 6 .7-4.5 4.1 1.2 6L12 16.4 6.7 19.4l1.2-6L3.4 9.3l6-.7z" fill="#E3B23C" stroke="#C9972A" stroke-width="1.1" stroke-linejoin="round"/></svg>`;
 const STICKER = `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2.5l2.8 6 6.5.8-4.8 4.4 1.3 6.5L12 16.9l-5.8 3.3 1.3-6.5L2.7 9.3l6.5-.8z" fill="#E3B23C" stroke="#C9972A" stroke-width=".9" stroke-linejoin="round"/><circle cx="10" cy="11.5" r=".9" fill="#34423F"/><circle cx="14" cy="11.5" r=".9" fill="#34423F"/><path d="M10.6 13.6q1.4 1.1 2.8 0" stroke="#34423F" stroke-width=".8" fill="none" stroke-linecap="round"/></svg>`;
@@ -282,7 +336,7 @@ const img = key => `<div class="svgbox pic">${IMG[key] || ''}</div>`;
 const uid = () => Math.random().toString(36).slice(2, 10);
 
 /* ---------- storage ---------- */
-function blankStore() { return { v: 1, profiles: [], current: null, settings: { rate: 0.85, praise: true, voice: '' } }; }
+function blankStore() { return { v: 1, profiles: [], current: null, settings: { rate: 0.85, praise: true, sfx: true, voice: '' } }; }
 let store = blankStore();
 function load() {
   try { const raw = localStorage.getItem(STORE_KEY); if (raw) store = Object.assign(blankStore(), JSON.parse(raw)); } catch (e) { /* storage unavailable */ }
@@ -303,7 +357,7 @@ function ageYears(birth) {
 }
 function autoLevel(birth) { const a = ageYears(birth); return a < 4 ? 1 : a < 6 ? 2 : a < 8 ? 3 : 4; }
 const levelOf = p => p.levelOverride || autoLevel(p.birth);
-const unlockedCount = p => Math.min(FRIENDS.length, 2 + Math.floor(p.stickers / STICKERS_PER_FRIEND));
+const unlockedCount = p => UNLOCK_AT.filter(t => t <= p.stickers).length;
 
 /* ---------- word pools & scheduling ---------- */
 const inUnit = (w, code) => w.unit === code || w.extra.includes(code);
@@ -503,7 +557,7 @@ function setupQuestion() {
   const p = prof(), g = view, w = BYID[g.ids[g.i]];
   const src = g.code === 'REVIEW' ? w.unit : g.code;
   g.opts = buildOptions(p, w, src).map(o => o.id);
-  g.state = 'ask'; g.first = true; g.wrong = []; g.mood = 'normal'; g.say = levelOf(p) === 4 ? 'Read it first!' : 'Which one is it?';
+  g.state = 'ask'; g.first = true; g.wrong = []; g.peek = []; g.fresh = false; g.mood = 'normal'; g.say = levelOf(p) === 4 ? 'Read it first!' : 'Which one is it?';
   const r = Object.assign(rec(p, w.id)); r.n = (r.n || 0) + 1; r.last = Date.now(); p.words[w.id] = r; save();
   render();
   clearTimeout(sayTimer);
@@ -519,16 +573,14 @@ function vGame(p) {
   const opts = g.opts.map(id => {
     const o = BYID[id];
     let cls = 'opt', inner;
-    const isRight = g.state === 'right' && id === w.id, isWrong = g.wrong.includes(id);
-    if (isRight) cls += ' right'; else if (isWrong) cls += ' wrong'; else if (g.state === 'right') cls += ' dim';
-    if (o.type === 't') { cls += ' text'; inner = esc(o.zh); }
-    else inner = img(o.img);
-    if (isWrong) inner += `<div class="lbl"><b>${esc(o.word)}</b><span>${esc(o.kk)}</span></div>`;
-    const ring = isRight ? (o.type === 't'
-      ? '<svg class="ring" viewBox="0 0 140 92" preserveAspectRatio="none" aria-hidden="true"><ellipse cx="70" cy="46" rx="62" ry="38"/></svg>'
-      : '<svg class="ring" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="50"/></svg>') : '';
-    const label = o.type === 't' ? o.zh : (isWrong ? o.word : 'picture');
-    return `<button class="${cls}" data-act="answer" data-id="${id}" aria-label="${esc(label)}">${inner}${ring}</button>`;
+    const isRight = g.state === 'right' && id === w.id, isWrong = g.wrong.includes(id), isPeek = g.peek.includes(id);
+    if (isRight) cls += ' is-right' + (g.fresh ? ' fresh' : ''); else if (isWrong) cls += ' is-wrong'; else if (isPeek) cls += ' is-peek';
+    const ring = isRight ? `<svg class="ring${g.fresh ? ' draw' : ''}" viewBox="0 0 120 120" aria-hidden="true"><circle cx="60" cy="60" r="50"/></svg>` : '';
+    if (o.type === 't') { cls += ' text'; inner = `<span class="txt">${esc(o.zh)}${ring}</span>`; }
+    else inner = `<div class="svgbox pic">${IMG[o.img] || ''}${ring}</div>`;
+    if (isWrong || isPeek) inner += `<div class="lbl"><b>${esc(o.word)}</b><span>${esc(o.kk)}</span></div>`;
+    const label = o.type === 't' ? o.zh : (isWrong || isPeek || isRight ? o.word : 'picture');
+    return `<button class="${cls}" data-act="answer" data-id="${id}" aria-label="${esc(label)}">${inner}</button>`;
   }).join('');
   const bubble = `<div class="bubble ${g.mood === 'cheer' ? 'yay' : ''}">${esc(g.say)}</div>`;
   return `<div class="screen game">
@@ -540,31 +592,75 @@ function vGame(p) {
     </div>
     <div class="dots">${dots}</div>
     <div class="stage">
-      <div class="left">
+      <div class="col-l">
         <div class="word-col">
           <button class="word-btn ${long ? 'long' : ''}" data-act="sayWord" aria-label="Play the word ${esc(w.word)}">${esc(w.word)}${ICON.speaker}</button>
           <div class="kk">${esc(w.kk)}</div>
           ${readFirst ? '<div class="hint">Try to read it first. Tap the word to hear it.</div>' : ''}
         </div>
         <div class="buddy"><div class="svgbox me ${g.mood === 'cheer' ? 'bounce' : ''}">${friendSVG(p.companion, g.mood)}</div>${bubble}</div>
-        <button class="big-btn next" data-act="next" ${g.state === 'right' ? '' : 'disabled'}>Next ${ICON.next}</button>
+        <button class="big-btn next-btn" data-act="next" ${g.state === 'right' ? '' : 'disabled'}>Next ${ICON.next}</button>
       </div>
-      <div class="right"><div class="opts n${n}">${opts}</div></div>
+      <div class="col-r"><div class="opts n${n}">${opts}</div></div>
     </div>
   </div>`;
 }
 function afterGameRender() { /* focus management could go here */ }
 
+/* ---------- correct-answer effect: soft chime + burst of stars/dots ---------- */
+let actx = null;
+function chime() {
+  if (!store.settings.sfx) return;
+  try {
+    actx = actx || new (window.AudioContext || window.webkitAudioContext)();
+    if (actx.state === 'suspended') actx.resume();
+    const t0 = actx.currentTime;
+    [[659.25, 0], [880, 0.09], [1318.5, 0.18]].forEach(([f, d]) => {
+      const o = actx.createOscillator(), gn = actx.createGain();
+      o.type = 'sine'; o.frequency.value = f;
+      gn.gain.setValueAtTime(0, t0 + d);
+      gn.gain.linearRampToValueAtTime(0.12, t0 + d + 0.015);
+      gn.gain.exponentialRampToValueAtTime(0.001, t0 + d + 0.5);
+      o.connect(gn).connect(actx.destination); o.start(t0 + d); o.stop(t0 + d + 0.55);
+    });
+  } catch (e) { /* audio not available */ }
+}
+const BURST_COLORS = ['#E3B23C', '#F0B48E', '#8DB3A2', '#4E7D89', '#D2604F', '#B9A9D6'];
+function celebrate(card) {
+  chime();
+  if (!store.settings.sfx || !card || (window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches)) return;
+  const r = card.getBoundingClientRect(), cx = r.left + r.width / 2, cy = r.top + r.height / 2;
+  const layer = document.createElement('div'); layer.className = 'burst'; layer.setAttribute('aria-hidden', 'true');
+  const n = 16;
+  for (let i = 0; i < n; i++) {
+    const a = (i / n) * Math.PI * 2 + Math.random() * 0.4, dist = 70 + Math.random() * 70;
+    const el = document.createElement('i');
+    el.className = i % 3 === 0 ? 'st' : 'dt';
+    el.style.cssText = `left:${cx}px;top:${cy}px;--dx:${Math.cos(a) * dist}px;--dy:${Math.sin(a) * dist}px;--c:${BURST_COLORS[i % BURST_COLORS.length]};--r:${Math.round(Math.random() * 180)}deg;animation-delay:${Math.random() * 60}ms`;
+    layer.appendChild(el);
+  }
+  document.body.appendChild(layer);
+  setTimeout(() => layer.remove(), 1100);
+}
+
 function answer(id) {
   const p = prof(), g = view, w = BYID[g.ids[g.i]];
-  if (g.state === 'right') return;
   const o = BYID[id];
+  if (g.state === 'right') {          // practice mode: every card can still be tapped
+    g.fresh = false;
+    if (id !== w.id && !g.wrong.includes(id) && !g.peek.includes(id)) { g.peek.push(id); render(); }
+    const el = document.querySelector(`.opt[data-id="${id}"]`);
+    if (el) { el.classList.remove('tap'); void el.offsetWidth; el.classList.add('tap'); }
+    speak(o.word);
+    return;
+  }
   if (id === w.id) {
-    g.state = 'right'; g.mood = 'cheer'; g.say = pick(PRAISE);
+    g.state = 'right'; g.mood = 'cheer'; g.say = pick(PRAISE); g.fresh = true;
     const r = rec(p, w.id);
     r.box = g.first ? (r.box ? Math.min(5, r.box + 1) : 2) : 1;
     schedule(p, r); p.words[w.id] = r;
     g.played.push(w.id); save(); render();
+    celebrate(document.querySelector(`.opt[data-id="${id}"]`));
     speak(w.word);
     if (store.settings.praise) speak(g.say, { queue: true, rate: 1 });
   } else {
@@ -590,10 +686,11 @@ function finishRound() {
 
 /* ---------- round done ---------- */
 function vDone(p) {
-  const d = view, toNext = STICKERS_PER_FRIEND - (p.stickers % STICKERS_PER_FRIEND);
-  const allUnlocked = unlockedCount(p) >= FRIENDS.length;
+  const d = view, un = unlockedCount(p), allUnlocked = un >= FRIENDS.length;
+  const prevAt = UNLOCK_AT[un - 1] || 0, nextAt = UNLOCK_AT[un] || prevAt, span = Math.max(1, nextAt - prevAt);
+  const toNext = nextAt - p.stickers;
   const minis = d.played.map(id => { const w = BYID[id]; return `<div>${w.type === 't' ? `<span style="font-family:var(--zh);font-size:15px">${esc(w.zh)}</span>` : `<div class="svgbox p">${IMG[w.img]}</div>`}<span>${esc(w.word)}</span></div>`; }).join('');
-  const slots = Array.from({ length: STICKERS_PER_FRIEND }, (_, k) => `<i class="${k < STICKERS_PER_FRIEND - toNext ? 'on' : ''}"></i>`).join('');
+  const slots = Array.from({ length: span }, (_, k) => `<i class="${k < span - toNext ? 'on' : ''}"></i>`).join('');
   const nf = d.newFriend ? FRIEND[d.newFriend] : null;
   return `<div class="screen done">
     <h1>Round complete!</h1>
@@ -601,7 +698,7 @@ function vDone(p) {
     <p style="margin:0;font-size:18px;font-weight:800">You got a new sticker!</p>
     ${nf ? `<div class="card" style="align-items:center;text-align:center;border:3px solid var(--gold)"><div class="svgbox" style="width:96px;height:96px">${friendSVG(nf.id, 'cheer')}</div><b style="font-family:var(--display);font-size:24px">New friend: ${nf.name}!</b><button class="soft-btn" style="background:var(--accent-soft)" data-act="friends">Meet ${nf.name}</button></div>` : ''}
     <div class="card"><span class="cap">Words this round</span><div class="minis">${minis}</div></div>
-    ${allUnlocked ? '' : `<div class="card" style="flex-direction:row;align-items:center"><div class="grow" style="display:flex;flex-direction:column;gap:10px"><b>${toNext} more sticker${toNext > 1 ? 's' : ''} for a new friend!</b><div class="slots">${slots}</div></div><div class="svgbox" style="width:60px;height:60px">${friendSVG('', 'locked')}</div></div>`}
+    ${allUnlocked ? '' : `<div class="card" style="flex-direction:row;align-items:center"><div class="grow" style="display:flex;flex-direction:column;gap:10px"><b>${toNext} more sticker${toNext > 1 ? 's' : ''} for a new friend!</b><div class="slots">${slots}</div></div><div class="svgbox" style="width:60px;height:60px">${friendSVG(FRIENDS[un].id, 'locked')}</div></div>`}
     <div style="display:flex;flex-direction:column;gap:10px;width:100%;margin-top:auto">
       <button class="big-btn" data-act="startUnit" data-code="${d.code}">Play again</button>
       <button class="soft-btn" data-act="home">Choose a unit</button></div>
@@ -612,15 +709,16 @@ function vDone(p) {
 function vFriends(p) {
   const un = unlockedCount(p);
   const cards = FRIENDS.map((f, k) => {
-    if (k >= un) {
-      const need = (k - 1) * STICKERS_PER_FRIEND - p.stickers;
-      return `<div class="friend lock"><div class="svgbox pic">${friendSVG(f.id, 'locked')}</div><span class="nm" style="color:var(--disabled-ink)">???</span><span class="tag need">${need} more sticker${need > 1 ? 's' : ''}</span></div>`;
+    if (k === un) {
+      const need = UNLOCK_AT[k] - p.stickers;
+      return `<div class="friend lock next"><div class="svgbox pic">${friendSVG(f.id, 'locked')}</div><span class="nm" style="color:var(--disabled-ink)">???</span><span class="tag need">${need} more sticker${need > 1 ? 's' : ''}</span></div>`;
     }
+    if (k > un) return `<div class="friend lock far" aria-label="Locked friend"><div class="svgbox pic">${friendSVG(f.id, 'locked')}</div></div>`;
     const sel = p.companion === f.id;
     return `<button class="friend ${sel ? 'sel' : ''}" data-act="setCompanion" data-id="${f.id}"><div class="svgbox pic">${friendSVG(f.id, sel ? 'cheer' : 'normal')}</div><span class="nm">${f.name}</span><span class="tag ${sel ? 'on' : 'pick'}">${sel ? 'With me' : 'Tap to pick'}</span></button>`;
   }).join('');
   return `<div class="screen">
-    <div class="row"><button class="round-btn" data-act="home" aria-label="Back">${ICON.back}</button><h1 style="font-size:28px">My Friends</h1></div>
+    <div class="row"><button class="round-btn" data-act="home" aria-label="Back">${ICON.back}</button><h1 class="grow" style="font-size:28px">My Friends</h1><span class="chip">${un} / ${FRIENDS.length}</span></div>
     <div class="card"><div class="row" style="justify-content:space-between"><b>My stickers</b><span class="muted" style="font-weight:800">${p.stickers}</span></div>
       <div class="stars">${p.stickers ? Array.from({ length: Math.min(p.stickers, 60) }, () => STAR).join('') : '<span class="muted">Finish a round to get your first sticker!</span>'}</div></div>
     <div class="friends">${cards}</div>
@@ -668,6 +766,7 @@ function vSettings() {
       <div class="field"><label for="voice-sel">聲音（美式英文）</label><select id="voice-sel" data-change="voice"><option value="">自動選擇</option>${vOpts}</select>
         ${voices.length ? '' : '<span class="muted" style="font-size:14px">尚未偵測到美式英文語音；iPhone 可到「設定 › 輔助使用 › 朗讀內容 › 聲音」下載英文語音。</span>'}</div>
       <div class="field"><span class="lab">答對時夥伴唸出稱讚</span><div class="seg"><button class="${s.praise ? 'on' : ''}" data-act="setPraise" data-v="1">開</button><button class="${s.praise ? '' : 'on'}" data-act="setPraise" data-v="0">關</button></div></div>
+      <div class="field"><span class="lab">答對音效與特效</span><div class="seg"><button class="${s.sfx ? 'on' : ''}" data-act="setSfx" data-v="1">開</button><button class="${s.sfx ? '' : 'on'}" data-act="setSfx" data-v="0">關</button></div></div>
       <div class="btn-line"><button data-act="testVoice">試聽</button></div>
     </div>
     <div class="sec"><h2>備份與還原</h2>
@@ -717,6 +816,7 @@ document.addEventListener('click', e => {
     case 'resetProfile': { const q = store.profiles.find(x => x.id === el.dataset.id); Object.assign(q, { words: {}, round: 0, stickers: 0 }); view.confirm = null; save(); toast('已清除'); render(); break; }
     case 'deleteProfile': store.profiles = store.profiles.filter(x => x.id !== el.dataset.id); if (store.current === el.dataset.id) store.current = null; view.confirm = null; save(); render(); break;
     case 'setRate': store.settings.rate = Number(el.dataset.r); save(); render(); break;
+    case 'setSfx': store.settings.sfx = el.dataset.v === '1'; save(); render(); break;
     case 'setPraise': store.settings.praise = el.dataset.v === '1'; save(); render(); break;
     case 'testVoice': speak('Hello! Let\'s learn some words. Giraffe!'); break;
     case 'exportData': {
