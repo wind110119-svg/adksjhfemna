@@ -97,6 +97,8 @@ h1,h2{font-family:var(--display);font-weight:700;margin:0;line-height:1.15}
 .opts.n2 .opt .pic{width:62%}
 .opts.n4 .opt .pic{width:46%}
 .opt .pic{position:relative}
+.opt .zh-tag{font-family:var(--zh);font-size:13px;line-height:1.2;color:var(--muted);font-weight:500;margin-top:2px;max-width:100%;overflow-wrap:anywhere}
+.opts.n4 .opt .zh-tag{font-size:12px}
 .opt .txt{position:relative;display:inline-block;padding:4px 10px}
 .opt .lbl{display:flex;flex-direction:column;align-items:center;gap:0;text-align:center}
 .opt .lbl b{font-family:var(--display);font-size:20px;line-height:1.1}
@@ -131,6 +133,7 @@ h1,h2{font-family:var(--display);font-weight:700;margin:0;line-height:1.15}
   .col-l{width:min(38%,400px);display:flex;flex-direction:column;gap:14px;flex:none}
   .col-r{flex:1;display:flex;flex-direction:column;justify-content:center;min-width:0}
   .opts.n3{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .opt .zh-tag{font-size:16px}
   .opts.n2 .opt{min-height:300px}
   .opts.n3 .opt{min-height:240px}
   .opts.n4 .opt{min-height:170px}
@@ -336,7 +339,7 @@ const img = key => `<div class="svgbox pic">${IMG[key] || ''}</div>`;
 const uid = () => Math.random().toString(36).slice(2, 10);
 
 /* ---------- storage ---------- */
-function blankStore() { return { v: 1, profiles: [], current: null, settings: { rate: 0.85, praise: true, sfx: true, voice: '' } }; }
+function blankStore() { return { v: 1, profiles: [], current: null, settings: { rate: 0.85, praise: true, sfx: true, zh: true, voice: '' } }; }
 let store = blankStore();
 function load() {
   try { const raw = localStorage.getItem(STORE_KEY); if (raw) store = Object.assign(blankStore(), JSON.parse(raw)); } catch (e) { /* storage unavailable */ }
@@ -579,6 +582,7 @@ function vGame(p) {
     if (o.type === 't') { cls += ' text'; inner = `<span class="txt">${esc(o.zh)}${ring}</span>`; }
     else inner = `<div class="svgbox pic">${IMG[o.img] || ''}${ring}</div>`;
     if (isWrong || isPeek) inner += `<div class="lbl"><b>${esc(o.word)}</b><span>${esc(o.kk)}</span></div>`;
+    if (o.type !== 't' && store.settings.zh) inner += `<span class="zh-tag">${esc(o.zh)}</span>`;
     const label = o.type === 't' ? o.zh : (isWrong || isPeek || isRight ? o.word : 'picture');
     return `<button class="${cls}" data-act="answer" data-id="${id}" aria-label="${esc(label)}">${inner}</button>`;
   }).join('');
@@ -766,6 +770,7 @@ function vSettings() {
       <div class="field"><label for="voice-sel">聲音（美式英文）</label><select id="voice-sel" data-change="voice"><option value="">自動選擇</option>${vOpts}</select>
         ${voices.length ? '' : '<span class="muted" style="font-size:14px">尚未偵測到美式英文語音；iPhone 可到「設定 › 輔助使用 › 朗讀內容 › 聲音」下載英文語音。</span>'}</div>
       <div class="field"><span class="lab">答對時夥伴唸出稱讚</span><div class="seg"><button class="${s.praise ? 'on' : ''}" data-act="setPraise" data-v="1">開</button><button class="${s.praise ? '' : 'on'}" data-act="setPraise" data-v="0">關</button></div></div>
+      <div class="field"><span class="lab">圖片下方顯示中文名稱</span><div class="seg"><button class="${s.zh ? 'on' : ''}" data-act="setZh" data-v="1">開</button><button class="${s.zh ? '' : 'on'}" data-act="setZh" data-v="0">關</button></div></div>
       <div class="field"><span class="lab">答對音效與特效</span><div class="seg"><button class="${s.sfx ? 'on' : ''}" data-act="setSfx" data-v="1">開</button><button class="${s.sfx ? '' : 'on'}" data-act="setSfx" data-v="0">關</button></div></div>
       <div class="btn-line"><button data-act="testVoice">試聽</button></div>
     </div>
@@ -816,6 +821,7 @@ document.addEventListener('click', e => {
     case 'resetProfile': { const q = store.profiles.find(x => x.id === el.dataset.id); Object.assign(q, { words: {}, round: 0, stickers: 0 }); view.confirm = null; save(); toast('已清除'); render(); break; }
     case 'deleteProfile': store.profiles = store.profiles.filter(x => x.id !== el.dataset.id); if (store.current === el.dataset.id) store.current = null; view.confirm = null; save(); render(); break;
     case 'setRate': store.settings.rate = Number(el.dataset.r); save(); render(); break;
+    case 'setZh': store.settings.zh = el.dataset.v === '1'; save(); render(); break;
     case 'setSfx': store.settings.sfx = el.dataset.v === '1'; save(); render(); break;
     case 'setPraise': store.settings.praise = el.dataset.v === '1'; save(); render(); break;
     case 'testVoice': speak('Hello! Let\'s learn some words. Giraffe!'); break;
